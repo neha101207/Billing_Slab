@@ -8,11 +8,12 @@ export default ({ config, db }) => {
   // reading product detail
   api.get("/product_detail", (req, res) => {
     //find id in company table and return the company
-    db.query("SELECT * from product_detail", (err, response) => {
+    db.query("SELECT * from product_detail where status=true", (err, response) => {
       if (err) {
         console.log(err.stack);
       } else {
         console.log(response.rows);
+       
 				res.json({"product":response.rows});
       }
     });
@@ -23,7 +24,7 @@ export default ({ config, db }) => {
   //reading data of given id
   api.get("/product_detail/:id", (req, res) => {
     //find id in company table and return the company
-    db.query(`SELECT * from product_detail where id=${req.params.id}`, (err, response) => {
+    db.query(`SELECT * from product_detail where id=${req.params.id} and status=true`, (err, response) => {
       if (err) {
         console.log(err.stack);
       } else {
@@ -59,8 +60,8 @@ export default ({ config, db }) => {
         response.rows.map((ee, index) => {
           
          for(let i=0;i<estimationItems.length ; i++){
-          if (ee.product_id === estimationItems[i].product_id) {
-            arry.push(estimationItems[index].qty*ee.price)
+          if (ee.product_id === estimationItems[i].product_id && ee.status===true) {
+            arry.push({"Product_ID":ee.product_id, "Quantity":estimationItems[index].qty, "Estimation":estimationItems[index].qty*ee.price})
             console.log("hello")
           }
          }
@@ -95,7 +96,7 @@ export default ({ config, db }) => {
     
     console.log("body", req.body);
     const {product_id}=req.body;
-    db.query(`update product_detail set product_id=${product_id} where id=${req.params.id}`, (err, response) => {
+    db.query(`update product_detail set product_id=${product_id} where id=${req.params.id} and status=true`, (err, response) => {
       if (err) {
         console.log(err.stack);
       } else {
@@ -111,7 +112,7 @@ export default ({ config, db }) => {
     
     console.log("body", req.body);
     const {product_id}=req.body;
-    db.query(`update product_detail set status=false where id=${req.params.id}`, (err, response) => {
+    db.query(`update product_detail set status=false where id=${req.params.id} `, (err, response) => {
       if (err) {
         console.log(err.stack);
       } else {
